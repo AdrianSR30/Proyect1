@@ -1,6 +1,8 @@
 import os
 import redis
 import re
+
+#se importa BeautifulSoup
 from bs4 import BeautifulSoup
 
 r = redis.Redis(host='localhost', port=6379, db=0)
@@ -15,8 +17,10 @@ def load_folder(path):
             with open(path + file) as f:
                 html = f.read()
                 book_id = match.group(1)
+
                 r.set(book_id, html)
                 create_index(book_id, html)
+
             print(match.group(0), match.group(1))
 
 def create_index(book_id, html):
@@ -25,5 +29,8 @@ def create_index(book_id, html):
     lista_texto = texto.split(' ')
     for t in lista_texto:
         r.sadd(t, book_id)
-        
+    
+    # print(lista_texto[:20])
+    #print(soup.get_text())
+
 load_folder('html/books/')
