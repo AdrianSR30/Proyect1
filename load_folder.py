@@ -25,6 +25,5 @@ def create_index(book_id, html):
     lista_texto = texto.split(' ')
     for t in lista_texto:
         r.sadd(t, book_id)
-
-
+        
 load_folder('html/books/')
