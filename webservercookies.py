@@ -47,7 +47,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         r.rpush(session_id, book_id)
         books = r.lrange(session_id, 0, 5)
         print(session_id, books)
-        all_books = [str(i+1) for i in range(4)]
+        all_books = [str(i+1) for i in range(5)]
         new = [b for b in all_books if b not in
                [vb.decode() for vb in books]]
         if new:
