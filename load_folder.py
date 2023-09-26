@@ -29,8 +29,5 @@ def create_index(book_id, html):
     lista_texto = texto.split(' ')
     for t in lista_texto:
         r.sadd(t, book_id)
-    
-    # print(lista_texto[:20])
-    #print(soup.get_text())
 
 load_folder('html/books/')
