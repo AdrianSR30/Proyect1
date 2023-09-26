@@ -1,7 +1,6 @@
 import os
 import redis
 import re
-# https://github.com/redis/redis-py
 
 r = redis.Redis(host='localhost', port=6379, db=0)
 
