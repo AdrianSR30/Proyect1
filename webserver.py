@@ -62,7 +62,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             <label for="q">Buscar </label>
             <input type="text" name="q" required/>
         </form>
-        <p>Palabra(s) clave: {self.query_data.get('q', '')}</p>
+        <p>Palabras clave: {self.query_data.get('q', '')}</p>
         <p>Libros registrados:</p>
         <ul>
             {"".join(f'<li>{info}</li>' for info in books_info)}
