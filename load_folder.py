@@ -17,7 +17,7 @@ def load_folder(path):
                 book_id = match.group(1)
                 r.set(book_id, html)
                 create_index(book_id, html)
-            print(match.group(0), book_id)
+            print(match.group(0), match.group(1))
 
 def create_index(book_id, html):
     soup = BeautifulSoup(html, 'html.parser')
