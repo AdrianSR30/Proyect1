@@ -33,26 +33,44 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/html; charset = utf-8")
         self.end_headers()
         books = None
-        search_query = self.query_data.get('q', '')
-        if search_query:
-            books = self.search_books(search_query.split(' '))
-        self.wfile.write(self.get_response(search_query, books).encode("utf-8"))
+        if self.query_data and 'q' in self.query_data:
+            query = self.query_data['q'].lower()  
+            words = re.split(r'\s+', query)  
+            books = self.search_books(words)
+        self.wfile.write(self.get_response(books).encode("utf-8"))
 
-    def search_books(self, keywords):
-        r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
-        return r.sinter(keywords)
-        
-    def get_response(self, search_query, books):
+    def search_books(self, words):
+        book_ids = set()
+        for word in words:
+            word = word.lower() 
+            book_ids.update(r.smembers(word))
+        return list(book_ids)
+
+    def get_response(self, books):
+        books_info = []
+        if books:
+            for book_id in books:
+                html = r.get(book_id).decode('utf-8')
+                title = self.extract_title(html)
+                books_info.append(f"Libro {book_id}: {title}")
+
         return f"""
-    <h1> Mi Libreria </h1>
-    <form action="/search" method="get">
-        <label for="q"> Busqueda </label>
-        <input type="text" name="q" required value = "{}"/>
-        <input type="submit" value="Buscar"/>
-    </form>
-    <p>  {self.query_data}   </p>
-    <p>  {books}   </p>
-"""
+        <h1> Realiza una busqueda: </h1>
+        <form action="/" method="get">
+            <label for="q">Buscar </label>
+            <input type="text" name="q" required/>
+        </form>
+        <p>Palabra(s) buscada(s): {self.query_data.get('q', '')}</p>
+        <p>Libros encontrados:</p>
+        <ul>
+            {"".join(f'<li>{info}</li>' for info in books_info)}
+        </ul>
+        """
+
+    def extract_title(self, html):
+        soup = BeautifulSoup(html, 'html.parser')
+        title = soup.find('title')
+        return title.get_text() if title else 'Sin tÃ­tulo'
 
 
 if __name__ == "__main__":
