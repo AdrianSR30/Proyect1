@@ -30,19 +30,25 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self.send_response(200)
-        self.send_header("Content-Type", "text/html")
+        self.send_header("Content-Type", "text/html; charset = utf-8")
         self.end_headers()
         books = None
-        if self.query_data and 'q' in self.query_data:
-            books = r.sinter(self.query_data['q'].split(','))
-        self.wfile.write(self.get_response(books).encode("utf-8"))
+        search_query = self.query_data.get('q', '')
+        if search_query:
+            books = self.search_books(search_query.split(' '))
+        self.wfile.write(self.get_response(search_query, books).encode("utf-8"))
 
-    def get_response(self, books):
+    def search_books(self, keywords):
+        r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
+        return r.sinter(keywords)
+        
+    def get_response(self, search_query, books):
         return f"""
     <h1> Mi Libreria </h1>
     <form action="/search" method="get">
         <label for="q"> Busqueda </label>
-        <input type="text" name="q" required/>
+        <input type="text" name="q" required value = "{}"/>
+        <input type="submit" value="Buscar"/>
     </form>
     <p>  {self.query_data}   </p>
     <p>  {books}   </p>
