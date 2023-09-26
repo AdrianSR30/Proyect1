@@ -57,7 +57,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 books_info.append(f"Libro {book_id}: {title}")
 
         return f"""
-        <h1> Búsqueda: </h1>
+        <h1> Busqueda: </h1>
         <form action="/" method="get">
             <label for="q">Buscar </label>
             <input type="text" name="q" required/>
