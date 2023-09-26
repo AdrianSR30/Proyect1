@@ -54,7 +54,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             for book_id in books:
                 html = r.get(book_id).decode('utf-8')
                 title = self.extract_title(html)
-                books_info.append(f"Libro {book_id}: {title}")
+                books_info.append(f"Libro {book_id}")
 
         return f"""
         <h1> Busqueda: </h1>
