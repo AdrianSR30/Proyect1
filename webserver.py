@@ -3,6 +3,8 @@ from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qsl, urlparse
 import redis
+import re
+from bs4 import BeautifulSoup
 
 r = redis.Redis(host='localhost', port=6379, db=0)
 
@@ -55,13 +57,13 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 books_info.append(f"Libro {book_id}: {title}")
 
         return f"""
-        <h1> Realiza una busqueda: </h1>
+        <h1> Búsqueda: </h1>
         <form action="/" method="get">
             <label for="q">Buscar </label>
             <input type="text" name="q" required/>
         </form>
-        <p>Palabra(s) buscada(s): {self.query_data.get('q', '')}</p>
-        <p>Libros encontrados:</p>
+        <p>Palabra(s) clave: {self.query_data.get('q', '')}</p>
+        <p>Libros registrados:</p>
         <ul>
             {"".join(f'<li>{info}</li>' for info in books_info)}
         </ul>
@@ -70,7 +72,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def extract_title(self, html):
         soup = BeautifulSoup(html, 'html.parser')
         title = soup.find('title')
-        return title.get_text() if title else 'Sin tÃ­tulo'
+        return title.get_text() if title else 'Sin titulo'
 
 
 if __name__ == "__main__":
